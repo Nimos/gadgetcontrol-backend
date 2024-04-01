@@ -17,11 +17,13 @@ enum SCRIPT_RUN_RETURN_TYPES {
 interface ScriptInfo {
     file: string;
     name: string;
-    arguments?: {name: string, type?: SCRIPT_ARG_TYPES};
+    arguments?: { name: string, type?: SCRIPT_ARG_TYPES };
+    active: boolean;
 }
 
 class LightsController {
     subprocess: ChildProcessWithoutNullStreams | undefined; 
+    activeScript: string = "";
 
     constructor() {
         console.log("Creating Lights Controller")
@@ -49,7 +51,8 @@ class LightsController {
             
             let meta: ScriptInfo = {
                 file: scriptName,
-                name: scriptName.split(".").slice(0, -1).join(".")
+                name: scriptName.split(".").slice(0, -1).join("."),
+                active: scriptName == this.activeScript
             };
 
             if (scripts.includes(scriptName + ".json")) {
@@ -70,6 +73,8 @@ class LightsController {
         if (this.subprocess && !this.subprocess.killed) {
             this.subprocess.kill();
         }
+
+        this.activeScript = "";
     }
 
     async runScript(name: string, args: string[]): Promise<{"success": boolean, "message": SCRIPT_RUN_RETURN_TYPES}> {
@@ -81,6 +86,7 @@ class LightsController {
         }
 
         this.subprocess = spawn(LIGHTS_SCRIPTS_DIR + name); // TODO: figure out how to pass args safely
+        this.activeScript = name;
 
         return {"success": true, "message": SCRIPT_RUN_RETURN_TYPES.SUCCESS}
     }
