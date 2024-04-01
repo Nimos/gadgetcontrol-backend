@@ -75,9 +75,14 @@ class LightsController {
 
     endScript() {
         if (this.subprocess && !this.subprocess.killed) {
+            this.subprocess.off("exit", this.subprocessEnded);
             this.subprocess.kill();
         }
 
+        this.activeScript = "";
+    }
+
+    subprocessEnded(code: any, signal: any) {
         this.activeScript = "";
     }
 
@@ -92,9 +97,7 @@ class LightsController {
         this.subprocess = spawn(LIGHTS_SCRIPTS_DIR + name); // TODO: figure out how to pass args safely
         this.activeScript = name;
 
-        this.subprocess.on("exit", (code, signal) => {
-            this.activeScript = "";
-        })
+        this.subprocess.on("exit", this.subprocessEnded)
 
         return {"success": true, "message": SCRIPT_RUN_RETURN_TYPES.SUCCESS}
     }
