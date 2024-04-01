@@ -9,8 +9,14 @@ router.get('/scripts', async function (req, res, next) {
 
 router.post('/scripts/run/:scriptName([A-z\.]*)', async function (req, res, next) {
     const scriptName = req.params.scriptName;
-    const scripts = await lightsController.runScript(scriptName, []);
-    res.send(JSON.stringify(scripts));
+    const result = await lightsController.runScript(scriptName, []);
+    res.send(JSON.stringify(result));
 });
+
+
+router.post("/scripts/end", async function (req, res, next) {
+    const result = await lightsController.endScript();
+    res.send(JSON.stringify(result));
+})
 
 module.exports = router;
