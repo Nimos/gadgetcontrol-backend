@@ -5,8 +5,13 @@ import { readFile, readdir, stat } from "fs/promises";
 const LIGHTS_SCRIPTS_DIR = "./bin/lights/"
 
 enum SCRIPT_ARG_TYPES {
-    string,
-    rgb,
+    "string",
+    "rgb",
+}
+
+enum SCRIPT_RUN_RETURN_TYPES {
+    "ERR_NO_SCRIPT",
+    "SUCCESS"
 }
 
 interface ScriptInfo {
@@ -67,8 +72,17 @@ class LightsController {
         }
     }
 
-    runScript(name: string, args: string[]) {
-        this.endScript();        
+    async runScript(name: string, args: string[]): Promise<{"success": boolean, "message": SCRIPT_RUN_RETURN_TYPES}> {
+        this.endScript();
+        
+        let availableScripts = await this.listScriptFiles();
+        if (!availableScripts.includes(name)) {
+            return {"success": false, "message": SCRIPT_RUN_RETURN_TYPES.ERR_NO_SCRIPT};
+        }
+
+        this.subprocess = spawn(LIGHTS_SCRIPTS_DIR + name); // TODO: figure out how to pass args safely
+
+        return {"success": true, "message": SCRIPT_RUN_RETURN_TYPES.SUCCESS}
     }
 }
 
