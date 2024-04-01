@@ -92,6 +92,10 @@ class LightsController {
         this.subprocess = spawn(LIGHTS_SCRIPTS_DIR + name); // TODO: figure out how to pass args safely
         this.activeScript = name;
 
+        this.subprocess.on("exit", (code, signal) => {
+            this.activeScript = "";
+        })
+
         return {"success": true, "message": SCRIPT_RUN_RETURN_TYPES.SUCCESS}
     }
 }
