@@ -48,6 +48,10 @@ class LightsController {
             if (extension == "json") {
                 continue;
             }
+
+            if (scriptName[0] == ".") {
+                continue;
+            }
             
             let meta: ScriptInfo = {
                 file: scriptName,
