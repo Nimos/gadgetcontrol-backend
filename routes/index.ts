@@ -1,5 +1,5 @@
 import express, { Express, Request, Response } from "express";
-import lightsController from "../controllers/lightsController"
+import authController from "../controllers/authController";
 var router = express.Router();
 
 router.get('/', async function (req, res, next) {
